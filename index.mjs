@@ -24,15 +24,8 @@ export async function handler(event) {
     }
 
     // Assuming the token is in the format "Bearer <token>", extract the actual token
-    const actualToken = token.split(' ')[1];
-    const decoded = jwt.decode(actualToken);
-    if (!decoded || !decoded.sub) {
-        console.error("Invalid token or unable to decode.");
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: "Invalid or missing token." })
-        };
-    }
+    const decoded = jwt.decode(token);
+    // console.log(decoded);
     const user_id = decoded.sub;
     console.log("Decoded JWT user ID:", user_id);
 
