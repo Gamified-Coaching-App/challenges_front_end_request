@@ -1,4 +1,5 @@
 import aws from 'aws-sdk';
+import jwt from 'jsonwebtoken';
 
 const { DynamoDB } = aws;
 const documentClient = new DynamoDB.DocumentClient();
