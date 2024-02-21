@@ -25,7 +25,6 @@ export async function handler(event) {
         };
     }
 
-    // Assuming the token is in the format "Bearer <token>", extract the actual token
     const decoded = jwt.decode(token);
     console.log(decoded);
     const user_id = decoded.sub;
@@ -37,7 +36,10 @@ export async function handler(event) {
         // Fetch challenges for the user
         const challengeParams = {
             TableName: "challenges",
-            FilterExpression: "user_id = :user_id AND (status = :current OR status = :completed) AND start_date <= :today",
+            FilterExpression: "user_id = :user_id AND (#status = :current OR status = :completed) AND start_date <= :today",
+            ExpressionAttributeNames: {
+                "#status": "status", // to ensure status is not treated as a keyword
+            },
             ExpressionAttributeValues: {
                 ":user_id": user_id,
                 ":current": "current",
