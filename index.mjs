@@ -53,7 +53,7 @@ export async function handler(event) {
         // Fetch descriptions for each challenge based on template_id
         for (let challenge of challengeData.Items) {
             const templateParams = {
-                TableName: "challenge_template",
+                TableName: "challenges_template",
                 Key: { "template_id": challenge.template_id }
             };
 
