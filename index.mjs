@@ -2,8 +2,14 @@ const AWS = require('aws-sdk');
 const documentClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
-    // Extract user_id from the query parameters
-    const { user_id } = event.queryStringParameters;
+
+    const token = event.headers.Authorization || event.headers.authorization; // Assuming the token is in the format "Bearer <token>"
+    // console.log(token);
+    const decoded = jwt.decode(token);
+    // console.log(decoded);
+    const user_id = decoded.sub;
+    console.log("Decoded JWT user ID:", user_id);
+
     const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
     
     try {
