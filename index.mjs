@@ -3,7 +3,7 @@ import aws from 'aws-sdk';
 const { DynamoDB } = aws;
 const documentClient = new DynamoDB.DocumentClient();
 
-exports.handler = async (event) => {
+export async function handler(event) {
 
     const token = event.headers.Authorization || event.headers.authorization; // Assuming the token is in the format "Bearer <token>"
     // console.log(token);
