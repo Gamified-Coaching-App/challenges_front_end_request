@@ -13,8 +13,10 @@ export async function handler(event) {
         };
     }
 
+    console.log("Header present in the event.");
+    const token = event.headers.Authorization.split(' ')[1];
+    console.log(token);
     // Extract token and decode it
-    const token = event.headers.Authorization || event.headers.authorization;
     if (!token) {
         console.error("Authorization header is missing.");
         return {
@@ -25,7 +27,7 @@ export async function handler(event) {
 
     // Assuming the token is in the format "Bearer <token>", extract the actual token
     const decoded = jwt.decode(token);
-    // console.log(decoded);
+    console.log(decoded);
     const user_id = decoded.sub;
     console.log("Decoded JWT user ID:", user_id);
 
