@@ -63,6 +63,7 @@ export async function handler(event) {
 
         return {
             statusCode: 200,
+            headers: get_headers(),
             body: JSON.stringify(challengeData.Items)
         };
     } catch (error) {
@@ -72,4 +73,12 @@ export async function handler(event) {
             body: JSON.stringify({ error: "Failed to fetch challenges due to an internal error." })
         };
     }
+}
+
+function get_headers() {
+    return {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        "Access-Control-Allow-Methods": "OPTIONS,GET"
+    };
 }
