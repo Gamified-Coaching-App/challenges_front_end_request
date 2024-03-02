@@ -36,7 +36,8 @@ export async function handler(event) {
         // Fetch challenges for the user
         const challengeParams = {
             TableName: "challenges",
-            FilterExpression: "user_id = :user_id AND (#status = :current OR #status = :completed) AND start_date <= :today",
+            FilterExpression: "user_id = :user_id AND (#status = :current OR #status = :completed)",
+            // AND start_date <= :today
             ExpressionAttributeNames: {
                 "#status": "status", // to ensure status is not treated as a keyword
             },
