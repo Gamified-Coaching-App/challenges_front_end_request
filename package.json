@@ -1,7 +1,6 @@
 {
   "name": "challenges_front_end_request",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "dependencies": {
     "available-typed-arrays": "^1.0.7",
@@ -59,11 +58,19 @@
     "xmlbuilder": "^11.0.1",
     "yallist": "^4.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "aws-sdk-mock": "^5.9.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "nock": "^13.5.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "description": ""
 }

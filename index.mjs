@@ -45,7 +45,7 @@ export async function handler(event) {
                 ":user_id": user_id,
                 ":current": "current",
                 ":completed": "completed",
-                // ":today": today
+                //":today": today
             }
         };
 
