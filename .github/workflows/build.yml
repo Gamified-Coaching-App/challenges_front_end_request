@@ -1,3 +1,6 @@
+## Template to use for all Lambda function deployments. 
+## FILL IN FUCNTION ARN IN DEPLLOYMENT STEP!!
+
 name: Deploy Lambda Function
 
 on:
@@ -8,9 +11,10 @@ on:
 jobs:
   setup:
     runs-on: ubuntu-latest
+    outputs:
+      node-version: '20'
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Check working directory
         run: |
@@ -22,29 +26,52 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: npm install
+          node-version: '20'
 
   test:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Run tests
         run: npm test
 
-  package:
+  package_deploy:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Package Lambda function
-        run: zip -r lambda.zip . -x '*.git*'
+      - uses: actions/checkout@v2
+      
+      - name: Check working directory
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "Directory contents:"
+          ls -la
 
-  deploy:
-    needs: package
-    runs-on: ubuntu-latest
-    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+      
+      - name: Package Lambda function
+        run: 
+          zip -r lambda.zip . -x '*.git*'
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
