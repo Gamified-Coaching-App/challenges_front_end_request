@@ -8,10 +8,10 @@ jest.mock('aws-sdk', () => {
       DynamoDB: {
         DocumentClient: jest.fn().mockReturnValue({
           scan: jest.fn().mockReturnValue({
-            promise: jest.fn().mockResolvedValue({ Items: [{ /* Simplified mock challenge data */ }] }),
+            promise: jest.fn().mockResolvedValue({ Items: [{ description: 'd' }] }),
           }),
           get: jest.fn().mockReturnValue({
-            promise: jest.fn().mockResolvedValue({ Item: { description: 'Simplified Mock Description' } }),
+            promise: jest.fn().mockResolvedValue({ Item: { description: 'd' } }),
           }),
         }),
       },
@@ -37,18 +37,17 @@ describe('handler function', () => {
         });
       });
     it('successfully fetches challenges', async () => {
-      // Setup your event or any preconditions
+      // Setup the event 
       const event = {
         headers: {
           Authorization: 'Bearer mocktoken123',
         },
       };
   
-      // Call your handler function
+      // Call the handler function
       const response = await handler(event);
   
       // Assertions based on the expected outcomes
       expect(response.statusCode).toEqual(200);
-      // This assumes your handler correctly responds based on the mocked aws-sdk behavior
     });
 });  
