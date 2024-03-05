@@ -4,23 +4,37 @@ import jwt from 'jsonwebtoken';
 
 // Mock aws-sdk directly within jest.mock()
 jest.mock('aws-sdk', () => {
-    return {
-      DynamoDB: {
-        DocumentClient: jest.fn().mockReturnValue({
-          scan: jest.fn().mockReturnValue({
-            promise: jest.fn().mockResolvedValue({ Items: [{ description: 'd' }] }),
-          }),
-          get: jest.fn().mockReturnValue({
-            promise: jest.fn().mockResolvedValue({ Item: { description: 'd' } }),
-          }),
-        }),
-      },
-    };
+  const mockScan = jest.fn().mockImplementation(() => ({
+      promise: () => Promise.resolve({
+          Items: [
+              { user_id: 'user123', challenge_id: 'challenge1', template_id: 'template1', status: 'current' },
+              { user_id: 'user123', challenge_id: 'challenge2', template_id: 'template2', status: 'completed' }
+          ]
+      })
+  }));
+  const mockGet = jest.fn().mockImplementation((params) => {
+      const descriptions = {
+          'template1': { description: 'Template 1 Description' },
+          'template2': { description: 'Template 2 Description' }
+      };
+      return {
+          promise: () => Promise.resolve({ Item: descriptions[params.Key.template_id] })
+      };
   });
+  return {
+      DynamoDB: {
+          DocumentClient: jest.fn(() => ({
+              scan: mockScan,
+              get: mockGet
+          }))
+      }
+  };
+});
+
   
 // Mock jsonwebtoken directly within jest.mock()
 jest.mock('jsonwebtoken', () => ({
-decode: jest.fn().mockReturnValue({ sub: 'user123' }) // Mocked decoded token value
+  decode: jest.fn().mockReturnValue({ sub: 'user123' }) // Mocked decoded token value
 }));
   
 describe('handler function', () => {
@@ -28,6 +42,7 @@ describe('handler function', () => {
       // Clear all mocks before each test
       jest.clearAllMocks();
     });
+
     it('returns 400 if no headers are provided', async () => {
         const event = {}; // Empty event, no headers
         const response = await handler(event);
@@ -35,19 +50,24 @@ describe('handler function', () => {
           statusCode: 400,
           body: JSON.stringify({ error: "No headers provided in the request." })
         });
-      });
-    it('successfully fetches challenges', async () => {
-      // Setup the event 
+    });
+
+    it('successfully fetches challenges with descriptions', async () => {
       const event = {
         headers: {
           Authorization: 'Bearer mocktoken123',
         },
       };
   
-      // Call the handler function
       const response = await handler(event);
   
       // Assertions based on the expected outcomes
       expect(response.statusCode).toEqual(200);
+      const body = JSON.parse(response.body);
+      // Verify that the response body contains the expected data
+      expect(body).toEqual(expect.arrayContaining([
+        expect.objectContaining({ description: 'Template 1 Description' }),
+        expect.objectContaining({ description: 'Template 2 Description' })
+      ]));
     });
-});  
+});
