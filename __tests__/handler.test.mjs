@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 // Mock aws-sdk directly within jest.mock()
 jest.mock('aws-sdk', () => {
+  // The scan method is mocked to return a list of challenges. This simulates fetching challenges from a DynamoDB table
   const mockScan = jest.fn().mockImplementation(() => ({
       promise: () => Promise.resolve({
           Items: [
@@ -12,6 +13,7 @@ jest.mock('aws-sdk', () => {
           ]
       })
   }));
+  // The get method is mocked to return an item based on template_id. This simulates fetching challenge descriptions from another DynamoDB table
   const mockGet = jest.fn().mockImplementation((params) => {
       const descriptions = {
           'template1': { description: 'Template 1 Description' },
@@ -68,6 +70,7 @@ describe('handler function', () => {
       expect(body).toEqual(expect.arrayContaining([
         expect.objectContaining({ description: 'Template 1 Description' }),
         expect.objectContaining({ description: 'Template 2 Description' })
-      ]));
+      ]));  
     });
+    
 });

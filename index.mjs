@@ -37,7 +37,6 @@ export async function handler(event) {
         const challengeParams = {
             TableName: "challenges",
             FilterExpression: "user_id = :user_id AND (#status = :current OR #status = :completed)",
-            // AND start_date <= :today
             ExpressionAttributeNames: {
                 "#status": "status", // to ensure status is not treated as a keyword
             },
@@ -45,12 +44,19 @@ export async function handler(event) {
                 ":user_id": user_id,
                 ":current": "current",
                 ":completed": "completed",
-                //":today": today
             }
         };
 
         const challengeData = await documentClient.scan(challengeParams).promise();
 
+        if (challengeData.Items.length === 0) {
+            return {
+                statusCode: 200,
+                headers: get_headers(),
+                body: "" // Return an empty string if there are no challenges
+            };
+        }
+        
         // Fetch descriptions for each challenge based on template_id
         for (let challenge of challengeData.Items) {
             const templateParams = {
@@ -76,7 +82,7 @@ export async function handler(event) {
     }
 }
 
-function get_headers() {
+export function get_headers() {
     return {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
